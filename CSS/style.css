@@ -1,0 +1,44 @@
+
+*{
+
+    box-sizing: border-box;
+}
+/* #result{
+    width: 25%;
+} */
+
+#Section-img  {
+/* margin-right: auto;
+  width: 75%; */
+
+    display: inline-block;
+
+
+}
+
+#left-image{
+padding: 20px;
+    width: 300px;
+    height: 300px;
+
+}
+#right-image{
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+}
+#middle-image{
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+
+}
+header {
+padding: 30px;
+    text-align: center;
+    background-color: rgb(248, 241, 231);
+}
+
+#viewResult {
+    display: none;
+}
