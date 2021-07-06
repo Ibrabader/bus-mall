@@ -1,5 +1,7 @@
 'use strict';
 
+// ================= Global Decleration ==========================
+//================================================================
 let SectionElement = document.getElementById('Section-img');
 
 let leftImageElement = document.getElementById('left-image');
@@ -8,10 +10,13 @@ let rightImageElement = document.getElementById('right-image');
 
 
 let maxAttempt = 10;
-let counter = 1;
+let counter = 0;
 let votesArr = [];
 let seenArr=[];
 let namesArray = [];
+
+// ================= Constructor Function ==========================
+//==================================================================
 
 function product(name, source) {
 
@@ -22,9 +27,13 @@ function product(name, source) {
     product.productArray.push(this);
     namesArray.push(this.name)
     // votesArr.push(this.votes)
-}
 
+    
+}
 product.productArray = [];
+
+// ================= Expression ==========================
+//========================================================
 
 new product('bag', 'images/bag.jpg')
 new product('banana', 'images/banana.jpg')
@@ -46,16 +55,21 @@ new product('unicorn', 'images/unicorn.jpg')
 new product('water-can', 'images/water-can.jpg')
 new product('wine-glass', 'images/wine-glass.jpg')
 
+// ================= Random Numbers Function ==========================
 
 function generateRandomIndex() {
     return Math.floor(Math.random() * product.productArray.length);
 }
 
+
 let leftImage;
 let middleImage;
 let rightImage;
 
+let previousShown =[];
 
+// ================= Render Image Function ==========================
+//===================================================================
 
 function RenderThreeImages() {
     leftImage = generateRandomIndex();
@@ -65,17 +79,16 @@ function RenderThreeImages() {
     // console.log(middleImage);
     // console.log(rightImage);
 
-    while (leftImage === middleImage) {
+// ============== No double itration or same image at a time ============
+
+   
+    while ( leftImage === middleImage||previousShown.includes(leftImage) || rightImage === middleImage||previousShown.includes(rightImage) || rightImage === leftImage||previousShown.includes(middleImage))
+     {
         leftImage = generateRandomIndex();
-    }
-    while (rightImage === middleImage) {
         rightImage = generateRandomIndex();
+        middleImage = generateRandomIndex();
     }
-    while (rightImage === leftImage) {
-        rightImage = generateRandomIndex();
-    }
-
-
+    previousShown=[leftImage,middleImage,rightImage]
 
     product.productArray[leftImage].seen++;
     product.productArray[middleImage].seen++;
@@ -87,20 +100,10 @@ function RenderThreeImages() {
 }
 
 RenderThreeImages();
-// console.log(leftImage);
-// console.log(middleImage);
-// console.log(rightImage);
 
-// console.log(product.productArray[leftImage].source);
-
-// leftImageElement.addEventListener('click',ImageClick);
-// rightImageElement.addEventListener('click',ImageClick);
-// middleImageElement.addEventListener('click',ImageClick);
-
+// ================= Event Listener to the section  ==========================
+//============================================================================
 SectionElement.addEventListener('click', ImageClick);
-
-
-
 
 function ImageClick(event) {
 
@@ -108,7 +111,7 @@ function ImageClick(event) {
 
     if (counter >= maxAttempt) {
         //  renderList();              
-        document.getElementById('viewResult').style.display = "block";
+        document.getElementById('viewResult');
         // document.getElementById('Section-img').style.display = "none";
 
     } else {
@@ -132,16 +135,49 @@ function ImageClick(event) {
 
     }
 }
+
+
+
 let resultButton = document.getElementById('viewResult');
 resultButton.addEventListener('click', HandleShow);
 
 function HandleShow() {
     renderList();
-    console.log(votesArr);
-
     RenderChart();
     resultButton.removeEventListener('click', HandleShow);
 }
+
+
+
+/*===================Local Storage =====================*/
+/*======================================================*/
+
+
+let stringArrayOfProduct;
+function GetResultsToLs(){
+
+    stringArrayOfProduct = JSON.stringify(product.productArray)
+   localStorage.setItem('products',stringArrayOfProduct)
+
+// console.log(stringArrayOfProduct);
+}
+
+
+let dataArray;
+function RetriveResult() {
+
+    
+
+   
+ dataArray = JSON.parse( localStorage.getItem('products'));
+ if(dataArray !== null){
+product.productArray = dataArray;}
+
+
+}
+
+
+// =================== Render List =========================//
 
 function renderList() {
     let resultElement = document.getElementById('result');
@@ -154,8 +190,9 @@ function renderList() {
         let li = document.createElement('li');
         ul.appendChild(li);
         li.textContent = `${product.productArray[i].name} has this number of votes ${product.productArray[i].votes} and show for ${product.productArray[i].seen}`
-
+        console.log(product.productArray[i]);
     }
+    GetResultsToLs();
 
     SectionElement.removeEventListener('click', ImageClick);
 
@@ -164,9 +201,7 @@ function renderList() {
 
 
 
-
-//   console.log(ImageClick(event));
-// ImageClick();
+/* ======================== CHARTS ==========================*/
 
 function RenderChart() {
     var ctx = document.getElementById('myChart').getContext('2d');
@@ -202,30 +237,4 @@ function RenderChart() {
         }
     });
 }
-
-function gettingChart(){
-    let ctx = document.getElementById('myChart')
-    let myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: arrOfNames,
-            datasets: [{
-                label: '# of Votes',
-                data: arrOfVotes,
-                backgroundColor: 
-                ['rgba(255, 99, 132, 0.2)'],
-                borderColor: ['rgba(255, 99, 132, 1)'],
-                borderWidth: 1
-            },
-            {
-              label: '# of Shown',
-              data: arrOfshown,
-              backgroundColor: [
-                'rgb(54, 162, 235)'
-              ]
-            }]
-        },
-    })
-    }
-
-
+RetriveResult();
